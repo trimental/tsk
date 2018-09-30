@@ -22,8 +22,4 @@ impl Task {
             priority: None,
         }
     }
-
-    pub fn set_priority(&mut self, priority: Option<Priority>) {
-        self.priority = priority
-    }
 }

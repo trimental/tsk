@@ -105,7 +105,7 @@ fn main() {
                 "high" => task::Priority::High,
                 _ => unreachable!(),
             };
-            task.set_priority(Some(priority));
+            task.priority = Some(priority);
         }
         tsk_data.add_task(task);
         return;
