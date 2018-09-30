@@ -1,0 +1,15 @@
+[package]
+name = "tsk"
+version = "0.1.0"
+authors = ["Lucas Timmins <timmins.s.lucas@gmail.com>"]
+license = "MIT"
+description = "Manage tasks with tsk"
+repository = "https://github.com/trimental/tsk"
+
+[dependencies]
+clap = "2.32"
+serde = "1.0"
+serde_derive = "1.0"
+serde_json = "1.0"
+termion = "1.5"
+xdg = "2.1"
