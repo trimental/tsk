@@ -3,7 +3,7 @@ use termion::color;
 use task;
 
 pub fn list(tasks: &[task::Task]) {
-    for (i, task) in tasks.iter().enumerate() {
+    for (i, task) in tasks.iter().filter(|t| t.id.is_some()).enumerate() {
         let symbol = match task.priority {
             Some(task::Priority::Low) => ". ".to_string(),
             Some(task::Priority::Medium) => {
@@ -19,14 +19,14 @@ pub fn list(tasks: &[task::Task]) {
             format!(
                 "{}[{}]{}",
                 color::Fg(color::Red),
-                task.id,
+                task.id.unwrap(),
                 color::Fg(color::Reset)
             )
         } else {
             format!(
                 "{}({}){}",
                 color::Fg(color::Magenta),
-                task.id,
+                task.id.unwrap(),
                 color::Fg(color::Reset)
             )
         };
@@ -48,6 +48,28 @@ pub fn list(tasks: &[task::Task]) {
         };
 
         println!("{} {}{}", id, symbol, title);
+    }
+}
+
+pub fn list_completed(tasks: &[task::Task]) {
+    for task in tasks.iter().filter(|t| t.comp_time.is_some()) {
+        let title = format!(
+            "{}{}{}",
+            color::Fg(color::Yellow),
+            task.title,
+            color::Fg(color::Reset)
+        );
+        let comp_time = task.comp_time.unwrap();
+        let comp_time = format!(
+            "on {color}{}{reset} at {color}{}{reset}",
+            comp_time.format("%v"),
+            comp_time.format("%I%P:%Mm"),
+            color = color::Fg(color::Yellow),
+            reset = color::Fg(color::Reset),
+        );
+
+        println!("Completed:");
+        println!("    {} {}", title, comp_time);
     }
 }
 

@@ -2,6 +2,7 @@
 extern crate clap;
 #[macro_use]
 extern crate serde_derive;
+extern crate chrono;
 extern crate serde_json;
 extern crate termion;
 extern crate xdg;
@@ -22,7 +23,12 @@ fn main() {
         .version(crate_version!())
         .author(crate_authors!())
         .about("Manage tasks with tsk")
-        .subcommand(
+        .arg(
+            Arg::with_name("completed")
+                .short("c")
+                .long("completed")
+                .help("Show completed tasks when listing"),
+        ).subcommand(
             SubCommand::with_name("new")
                 .about("Create a new task")
                 .alias("n")
@@ -91,6 +97,31 @@ fn main() {
                         }).required(true)
                         .help("id of the task"),
                 ),
+        ).subcommand(
+            SubCommand::with_name("complete")
+                .about("Create a new task")
+                .alias("done")
+                .alias("finish")
+                .alias("c")
+                .arg(
+                    Arg::with_name("id")
+                        .index(1)
+                        .takes_value(true)
+                        .empty_values(false)
+                        .validator(|id| {
+                            if id.parse::<usize>().is_ok() {
+                                Ok(())
+                            } else {
+                                Err("Argument is not a interger".into())
+                            }
+                        }).required_unless("all")
+                        .help("id of the task"),
+                ).arg(
+                    Arg::with_name("all")
+                        .short("a")
+                        .long("all")
+                        .help("Delete all tasks"),
+                ),
         ).get_matches();
 
     if let Some(matches) = matches.subcommand_matches("new") {
@@ -122,11 +153,27 @@ fn main() {
         return;
     }
 
+    if let Some(matches) = matches.subcommand_matches("complete") {
+        // Complete a task
+        if matches.is_present("all") {
+            tsk_data.complete_all();
+        } else {
+            let id = matches.value_of("id").unwrap().parse::<usize>().unwrap();
+            tsk_data.complete_task(id);
+        }
+        return;
+    }
+
     if let Some(matches) = matches.subcommand_matches("info") {
         // Get info about a task
         let id = matches.value_of("id").unwrap().parse::<usize>().unwrap();
         let task = tsk_data.get_task(id).expect("Not a valid id");
         display::info(&task);
+        return;
+    }
+
+    if matches.is_present("completed") {
+        display::list_completed(&tsk_data.tasks);
         return;
     }
 

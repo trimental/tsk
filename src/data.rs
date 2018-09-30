@@ -7,6 +7,8 @@ use xdg;
 
 use serde_json;
 
+use chrono::Local;
+
 pub struct TskData {
     pub location: PathBuf,
     pub tasks: Vec<task::Task>,
@@ -40,7 +42,7 @@ impl TskData {
             ids.push(task.id);
         }
         for i in 1.. {
-            if !ids.contains(&i) {
+            if !ids.contains(&Some(i)) {
                 return i;
             }
         }
@@ -60,6 +62,24 @@ impl TskData {
 
     pub fn delete_all(&mut self) {
         self.tasks.clear();
+        self.write_tasks()
+    }
+
+    pub fn complete_task(&mut self, id: usize) {
+        let index = self.to_index(id).expect("Not a valid id");
+        {
+            let task = self.tasks.get_mut(index).unwrap();
+            task.comp_time = Some(Local::now());
+            task.id = None;
+        }
+        self.write_tasks()
+    }
+
+    pub fn complete_all(&mut self) {
+        for task in &mut self.tasks {
+            task.comp_time = Some(Local::now());
+            task.id = None;
+        }
         self.write_tasks()
     }
 
@@ -90,7 +110,7 @@ impl TskData {
 
     pub fn get_task(&mut self, id: usize) -> Option<task::Task> {
         for task in &mut self.tasks {
-            if task.id == id {
+            if task.id? == id {
                 return Some(task.clone());
             }
         }
@@ -99,7 +119,7 @@ impl TskData {
 
     pub fn to_index(&self, id: usize) -> Option<usize> {
         for (i, task) in self.tasks.iter().enumerate() {
-            if task.id == id {
+            if task.id? == id {
                 return Some(i);
             }
         }
