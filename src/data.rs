@@ -17,7 +17,7 @@ pub struct TskData {
 impl TskData {
     pub fn new() -> TskData {
         let xdg_dirs = xdg::BaseDirectories::with_prefix("tsk").unwrap();
-        let location = xdg_dirs.place_data_file("tsktasks").unwrap();
+        let location = xdg_dirs.place_data_file("tasks").unwrap();
 
         OpenOptions::new()
             .create(true)
