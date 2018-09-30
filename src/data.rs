@@ -68,7 +68,7 @@ impl TskData {
     pub fn complete_task(&mut self, id: usize) {
         let index = self.to_index(id).expect("Not a valid id");
         {
-            let task = self.tasks.get_mut(index).unwrap();
+            let task = &mut self.tasks[index];
             task.comp_time = Some(Local::now());
             task.id = None;
         }
