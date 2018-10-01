@@ -61,19 +61,19 @@ impl TskData {
 
         // Sort by creation date
         high.sort_by(|a, b| {
-            self.tasks[*a]
+            self.tasks[*b]
                 .creation_time
-                .cmp(&self.tasks[*b].creation_time)
+                .cmp(&self.tasks[*a].creation_time)
         });
         medium.sort_by(|a, b| {
-            self.tasks[*a]
+            self.tasks[*b]
                 .creation_time
-                .cmp(&self.tasks[*b].creation_time)
+                .cmp(&self.tasks[*a].creation_time)
         });
         low.sort_by(|a, b| {
-            self.tasks[*a]
+            self.tasks[*b]
                 .creation_time
-                .cmp(&self.tasks[*b].creation_time)
+                .cmp(&self.tasks[*a].creation_time)
         });
         order.append(&mut high);
         order.append(&mut medium);
