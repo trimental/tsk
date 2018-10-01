@@ -55,6 +55,14 @@ fn main() {
                         .empty_values(false)
                         .possible_values(&["low", "medium", "high"])
                         .help("Priority of the task"),
+                ).arg(
+                    Arg::with_name("tag")
+                        .short("t")
+                        .long("tag")
+                        .takes_value(true)
+                        .empty_values(false)
+                        .multiple(true)
+                        .help("tag to be assigned to the task"),
                 ),
         ).subcommand(
             SubCommand::with_name("del")
@@ -137,6 +145,9 @@ fn main() {
                 _ => unreachable!(),
             };
             task.priority = Some(priority);
+        }
+        if let Some(tags) = matches.values_of("tag") {
+            task.tags = tags.map(|t| t.to_string()).collect();
         }
         tsk_data.add_task(task);
         return;

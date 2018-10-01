@@ -111,8 +111,21 @@ pub fn info(task: &task::Task) {
         );
     }
 
+    if !task.tags.is_empty() {
+        print!(
+            "{}Tags:{} ",
+            color::Fg(color::Blue),
+            color::Fg(color::Reset),
+        );
+        print!("{}", task.tags[0]);
+        for tag in &task.tags[1..] {
+            print!(", {}", tag);
+        }
+        println!();
+    }
+
     let creation_time = format!(
-        "{color}Created:{reset} {color}{}{reset} at {color}{}{reset}",
+        "{color}Created:{reset}{} at {}",
         task.creation_time.format("%v"),
         task.creation_time.format("%I%P:%Mm"),
         color = color::Fg(color::Yellow),

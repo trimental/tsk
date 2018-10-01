@@ -14,6 +14,7 @@ pub struct Task {
     pub priority: Option<Priority>,
     pub creation_time: DateTime<Local>,
     pub comp_time: Option<DateTime<Local>>,
+    pub tags: Vec<String>,
 }
 
 impl Task {
@@ -24,6 +25,7 @@ impl Task {
             priority: None,
             creation_time: Local::now(),
             comp_time: None,
+            tags: Vec::new(),
         }
     }
 }
