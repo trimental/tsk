@@ -110,4 +110,13 @@ pub fn info(task: &task::Task) {
             priority
         );
     }
+
+    let creation_time = format!(
+        "{color}Created:{reset} {color}{}{reset} at {color}{}{reset}",
+        task.creation_time.format("%v"),
+        task.creation_time.format("%I%P:%Mm"),
+        color = color::Fg(color::Yellow),
+        reset = color::Fg(color::Reset),
+    );
+    println!("{}", creation_time);
 }
