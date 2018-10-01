@@ -61,18 +61,18 @@ fn main() {
                 .about("Delete a task")
                 .alias("d")
                 .arg(
-                    Arg::with_name("id")
+                    Arg::with_name("index")
                         .index(1)
                         .takes_value(true)
                         .empty_values(false)
-                        .validator(|id| {
-                            if id.parse::<usize>().is_ok() {
+                        .validator(|index| {
+                            if index.parse::<usize>().is_ok() {
                                 Ok(())
                             } else {
                                 Err("Argument is not a interger".into())
                             }
                         }).required_unless("all")
-                        .help("id of the task"),
+                        .help("index of the task"),
                 ).arg(
                     Arg::with_name("all")
                         .short("a")
@@ -84,18 +84,18 @@ fn main() {
                 .about("Display info about a task")
                 .alias("i")
                 .arg(
-                    Arg::with_name("id")
+                    Arg::with_name("index")
                         .index(1)
                         .takes_value(true)
                         .empty_values(false)
-                        .validator(|id| {
-                            if id.parse::<usize>().is_ok() {
+                        .validator(|index| {
+                            if index.parse::<usize>().is_ok() {
                                 Ok(())
                             } else {
                                 Err("Argument is not a interger".into())
                             }
                         }).required(true)
-                        .help("id of the task"),
+                        .help("index of the task"),
                 ),
         ).subcommand(
             SubCommand::with_name("complete")
@@ -104,18 +104,18 @@ fn main() {
                 .alias("finish")
                 .alias("c")
                 .arg(
-                    Arg::with_name("id")
+                    Arg::with_name("index")
                         .index(1)
                         .takes_value(true)
                         .empty_values(false)
-                        .validator(|id| {
-                            if id.parse::<usize>().is_ok() {
+                        .validator(|index| {
+                            if index.parse::<usize>().is_ok() {
                                 Ok(())
                             } else {
                                 Err("Argument is not a interger".into())
                             }
                         }).required_unless("all")
-                        .help("id of the task"),
+                        .help("index of the task"),
                 ).arg(
                     Arg::with_name("all")
                         .short("a")
@@ -147,8 +147,8 @@ fn main() {
         if matches.is_present("all") {
             tsk_data.delete_all();
         } else {
-            let id = matches.value_of("id").unwrap().parse::<usize>().unwrap();
-            tsk_data.delete_task(id);
+            let index = matches.value_of("index").unwrap().parse::<usize>().unwrap();
+            tsk_data.delete_task(index);
         }
         return;
     }
@@ -158,16 +158,16 @@ fn main() {
         if matches.is_present("all") {
             tsk_data.complete_all();
         } else {
-            let id = matches.value_of("id").unwrap().parse::<usize>().unwrap();
-            tsk_data.complete_task(id);
+            let index = matches.value_of("index").unwrap().parse::<usize>().unwrap();
+            tsk_data.complete_task(index);
         }
         return;
     }
 
     if let Some(matches) = matches.subcommand_matches("info") {
         // Get info about a task
-        let id = matches.value_of("id").unwrap().parse::<usize>().unwrap();
-        let task = tsk_data.get_task(id).expect("Not a valid id");
+        let index = matches.value_of("index").unwrap().parse::<usize>().unwrap();
+        let task = tsk_data.get_task(index).expect("Not a valid index");
         display::info(&task);
         return;
     }

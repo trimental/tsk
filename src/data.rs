@@ -87,8 +87,8 @@ impl TskData {
         self.write_tasks();
     }
 
-    pub fn delete_task(&mut self, id: usize) {
-        let index = self.to_index(id).expect("Not a valid id");
+    pub fn delete_task(&mut self, index: usize) {
+        let index = *self.order.get(index).expect("Not a valid index");
         self.tasks.remove(index);
         self.order();
         self.write_tasks()
@@ -100,8 +100,8 @@ impl TskData {
         self.write_tasks()
     }
 
-    pub fn complete_task(&mut self, order: usize) {
-        let index = self.to_index(order).expect("Not a valid index");
+    pub fn complete_task(&mut self, index: usize) {
+        let index = *self.order.get(index).expect("Not a valid index");
         {
             let task = &mut self.tasks[index];
             task.comp_time = Some(Local::now());
@@ -143,12 +143,8 @@ impl TskData {
         };
     }
 
-    pub fn get_task(&mut self, order: usize) -> Option<task::Task> {
-        let index = self.to_index(order)?;
+    pub fn get_task(&mut self, index: usize) -> Option<task::Task> {
+        let index = *self.order.get(index)?;
         Some(self.tasks[index].clone())
-    }
-
-    pub fn to_index(&self, order: usize) -> Option<usize> {
-        Some(*self.order.get(order)?)
     }
 }
