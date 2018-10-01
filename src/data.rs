@@ -12,6 +12,7 @@ use chrono::Local;
 pub struct TskData {
     pub location: PathBuf,
     pub tasks: Vec<task::Task>,
+    pub order: Vec<usize>,
 }
 
 impl TskData {
@@ -30,56 +31,90 @@ impl TskData {
         let mut tsk_data = TskData {
             location,
             tasks: Vec::with_capacity(data_len),
+            order: Vec::new(),
         };
         tsk_data.read_tasks();
+        tsk_data.order();
 
         tsk_data
     }
 
-    pub fn avaliable_id(&mut self) -> usize {
-        let mut ids = Vec::new();
-        for task in &self.tasks {
-            ids.push(task.id);
-        }
-        for i in 1.. {
-            if !ids.contains(&Some(i)) {
-                return i;
+    pub fn order(&mut self) {
+        let mut order = Vec::new();
+
+        // Sort by priority
+        let mut high = Vec::new();
+        let mut medium = Vec::new();
+        let mut low = Vec::new();
+        for (i, task) in self
+            .tasks
+            .iter()
+            .filter(|t| t.comp_time.is_none())
+            .enumerate()
+        {
+            match task.priority {
+                Some(task::Priority::High) => high.push(i),
+                Some(task::Priority::Medium) | None => medium.push(i),
+                Some(task::Priority::Low) => low.push(i),
             }
         }
-        unreachable!()
+
+        // Sort by creation date
+        high.sort_by(|a, b| {
+            self.tasks[*b]
+                .creation_time
+                .cmp(&self.tasks[*a].creation_time)
+        });
+        medium.sort_by(|a, b| {
+            self.tasks[*b]
+                .creation_time
+                .cmp(&self.tasks[*a].creation_time)
+        });
+        low.sort_by(|a, b| {
+            self.tasks[*b]
+                .creation_time
+                .cmp(&self.tasks[*a].creation_time)
+        });
+        order.append(&mut high);
+        order.append(&mut medium);
+        order.append(&mut low);
+        self.order = order;
     }
 
     pub fn add_task(&mut self, task: task::Task) {
         self.tasks.push(task);
+        self.order();
         self.write_tasks();
     }
 
-    pub fn delete_task(&mut self, id: usize) {
-        let index = self.to_index(id).expect("Not a valid id");
+    pub fn delete_task(&mut self, index: usize) {
+        let index = *self.order.get(index).expect("Not a valid index");
         self.tasks.remove(index);
+        self.order();
         self.write_tasks()
     }
 
     pub fn delete_all(&mut self) {
         self.tasks.clear();
+        self.order();
         self.write_tasks()
     }
 
-    pub fn complete_task(&mut self, id: usize) {
-        let index = self.to_index(id).expect("Not a valid id");
+    pub fn complete_task(&mut self, index: usize) {
+        let index = *self.order.get(index).expect("Not a valid index");
         {
             let task = &mut self.tasks[index];
             task.comp_time = Some(Local::now());
-            task.id = None;
         }
+        self.order();
         self.write_tasks()
     }
 
     pub fn complete_all(&mut self) {
         for task in &mut self.tasks {
             task.comp_time = Some(Local::now());
-            task.id = None;
         }
+        self.order();
         self.write_tasks()
     }
 
@@ -108,21 +143,8 @@ impl TskData {
         };
     }
 
-    pub fn get_task(&mut self, id: usize) -> Option<task::Task> {
-        for task in &mut self.tasks {
-            if task.id? == id {
-                return Some(task.clone());
-            }
-        }
-        None
-    }
-
-    pub fn to_index(&self, id: usize) -> Option<usize> {
-        for (i, task) in self.tasks.iter().enumerate() {
-            if task.id? == id {
-                return Some(i);
-            }
-        }
-        None
+    pub fn get_task(&mut self, index: usize) -> Option<task::Task> {
+        let index = *self.order.get(index)?;
+        Some(self.tasks[index].clone())
     }
 }
