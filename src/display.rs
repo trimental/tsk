@@ -2,8 +2,9 @@ use termion::color;
 
 use task;
 
-pub fn list(tasks: &[task::Task]) {
-    for (i, task) in tasks.iter().filter(|t| t.id.is_some()).enumerate() {
+pub fn list(tasks: &[task::Task], order: &[usize]) {
+    for (line, task_order) in order.iter().enumerate() {
+        let task = &tasks[*task_order];
         let symbol = match task.priority {
             Some(task::Priority::Low) => ". ".to_string(),
             Some(task::Priority::Medium) => {
@@ -15,23 +16,23 @@ pub fn list(tasks: &[task::Task]) {
             None => "  ".to_string(),
         };
 
-        let id = if i % 2 == 0 {
+        let task_order = if line % 2 == 0 {
             format!(
                 "{}[{}]{}",
                 color::Fg(color::Red),
-                task.id.unwrap(),
+                line,
                 color::Fg(color::Reset)
             )
         } else {
             format!(
                 "{}({}){}",
                 color::Fg(color::Magenta),
-                task.id.unwrap(),
+                line,
                 color::Fg(color::Reset)
             )
         };
 
-        let title = if i % 2 == 0 {
+        let title = if line % 2 == 0 {
             format!(
                 "{}{}{}",
                 color::Fg(color::Blue),
@@ -47,7 +48,7 @@ pub fn list(tasks: &[task::Task]) {
             )
         };
 
-        println!("{} {}{}", id, symbol, title);
+        println!("{} {}{}", task_order, symbol, title);
     }
 }
 

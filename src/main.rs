@@ -128,7 +128,7 @@ fn main() {
         // Create new task
         let title = matches.value_of("title").unwrap();
         let description = matches.value_of("description").unwrap();
-        let mut task = task::Task::new(tsk_data.avaliable_id(), title, description);
+        let mut task = task::Task::new(title, description);
         if let Some(priority) = matches.value_of("priority") {
             let priority = match priority {
                 "low" => task::Priority::Low,
@@ -178,5 +178,5 @@ fn main() {
     }
 
     // Display tasks
-    display::list(&tsk_data.tasks);
+    display::list(&tsk_data.tasks, &tsk_data.order);
 }
