@@ -5,18 +5,22 @@ extern crate serde_derive;
 extern crate chrono;
 extern crate serde_json;
 extern crate termion;
+extern crate toml;
 extern crate xdg;
 
+mod config;
 mod data;
 mod display;
 mod task;
 
+use config::TskConfig;
 use data::TskData;
 
 use clap::{App, Arg, SubCommand};
 
 fn main() {
     let mut tsk_data = TskData::new();
+    let _tsk_config = TskConfig::new();
 
     // Clap
     let matches = App::new("tsk")

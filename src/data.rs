@@ -120,7 +120,6 @@ impl TskData {
 
     pub fn write_tasks(&self) {
         let data_file = OpenOptions::new()
-            .create(self.location.exists())
             .write(true)
             .truncate(true)
             .open(self.location.clone())
@@ -130,7 +129,6 @@ impl TskData {
 
     pub fn read_tasks(&mut self) {
         let data_file = OpenOptions::new()
-            .create(self.location.exists())
             .read(true)
             .write(true)
             .open(self.location.clone())
